@@ -8,16 +8,62 @@ const navMenu = document.getElementById("navMenu");
 
 menuBtn.addEventListener("click", () => {
     navMenu.classList.toggle("show");
+
+    if (navMenu.classList.contains("show")) {
+        menuBtn.textContent = "✕";
+    } else {
+        menuBtn.textContent = "☰";
+    }
 });
 
-
-/* Close mobile menu after clicking */
 
 document.querySelectorAll("#navMenu a").forEach(link => {
 
     link.addEventListener("click", () => {
+
         navMenu.classList.remove("show");
+
+        menuBtn.textContent = "☰";
+
     });
+
+});
+
+
+/* =========================
+   SCROLL ANIMATION
+========================= */
+
+const animatedElements = document.querySelectorAll(
+    ".reveal, .reveal-left, .reveal-right"
+);
+
+
+const animationObserver = new IntersectionObserver(
+    (entries) => {
+
+        entries.forEach((entry) => {
+
+            if (entry.isIntersecting) {
+
+                entry.target.classList.add("active");
+
+                animationObserver.unobserve(entry.target);
+
+            }
+
+        });
+
+    },
+    {
+        threshold: 0.12
+    }
+);
+
+
+animatedElements.forEach((element) => {
+
+    animationObserver.observe(element);
 
 });
 
@@ -50,7 +96,9 @@ function updateTotal() {
 
     const total = productPrice * quantity;
 
-    totalBox.textContent = "৳" + total.toLocaleString("en-BD");
+    totalBox.textContent =
+        "৳" + total.toLocaleString("en-BD");
+
 }
 
 
@@ -59,9 +107,13 @@ plusBtn.addEventListener("click", () => {
     let quantity = parseInt(quantityInput.value);
 
     if (quantity < 10) {
+
         quantity++;
+
         quantityInput.value = quantity;
+
         updateTotal();
+
     }
 
 });
@@ -72,9 +124,13 @@ minusBtn.addEventListener("click", () => {
     let quantity = parseInt(quantityInput.value);
 
     if (quantity > 1) {
+
         quantity--;
+
         quantityInput.value = quantity;
+
         updateTotal();
+
     }
 
 });
@@ -85,32 +141,54 @@ minusBtn.addEventListener("click", () => {
 ========================= */
 
 const orderForm = document.getElementById("orderForm");
-const successMessage = document.getElementById("successMessage");
-const newOrderBtn = document.getElementById("newOrder");
+
+const successMessage =
+    document.getElementById("successMessage");
+
+const newOrderBtn =
+    document.getElementById("newOrder");
 
 
 orderForm.addEventListener("submit", function(event) {
 
     event.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const quantity = quantityInput.value;
+    const name =
+        document.getElementById("name").value.trim();
+
+    const phone =
+        document.getElementById("phone").value.trim();
+
+    const address =
+        document.getElementById("address").value.trim();
+
+    const quantity =
+        parseInt(quantityInput.value);
+
 
     if (!name || !phone || !address) {
+
         alert("Please fill in all required fields.");
+
         return;
+
     }
 
 
-    /* Basic Bangladesh phone validation */
+    /* Bangladesh mobile validation */
 
-    const phonePattern = /^(01)[3-9]\d{8}$/;
+    const phonePattern =
+        /^(01)[3-9]\d{8}$/;
+
 
     if (!phonePattern.test(phone)) {
-        alert("Please enter a valid Bangladesh mobile number.");
+
+        alert(
+            "Please enter a valid Bangladesh mobile number."
+        );
+
         return;
+
     }
 
 
@@ -133,25 +211,26 @@ orderForm.addEventListener("submit", function(event) {
     };
 
 
-    /*
-       Demo storage.
+    /* Save demo order */
 
-       Orders are saved in browser LocalStorage.
-       Later this can be connected to MySQL,
-       Firebase, Google Sheets or an Admin Portal.
-    */
+    let orders =
+        JSON.parse(
+            localStorage.getItem(
+                "dragonPowarOrders"
+            )
+        ) || [];
 
-    let orders = JSON.parse(
-        localStorage.getItem("dragonPowarOrders")
-    ) || [];
 
     orders.push(orderData);
+
 
     localStorage.setItem(
         "dragonPowarOrders",
         JSON.stringify(orders)
     );
 
+
+    /* Show success */
 
     orderForm.style.display = "none";
 
@@ -180,55 +259,11 @@ newOrderBtn.addEventListener("click", () => {
 
 
 /* =========================
-   CURRENT YEAR
+   YEAR
 ========================= */
 
 document.getElementById("year").textContent =
     new Date().getFullYear();
-
-
-/* =========================
-   SCROLL REVEAL
-========================= */
-
-const revealElements = document.querySelectorAll(
-    ".about-card, .review-card, .note, .order-box"
-);
-
-const observer = new IntersectionObserver(
-    entries => {
-
-        entries.forEach(entry => {
-
-            if (entry.isIntersecting) {
-
-                entry.target.style.opacity = "1";
-                entry.target.style.transform =
-                    "translateY(0)";
-
-                observer.unobserve(entry.target);
-
-            }
-
-        });
-
-    },
-    {
-        threshold: 0.12
-    }
-);
-
-
-revealElements.forEach(element => {
-
-    element.style.opacity = "0";
-    element.style.transform = "translateY(25px)";
-    element.style.transition =
-        "opacity .7s ease, transform .7s ease";
-
-    observer.observe(element);
-
-});
 
 
 /* =========================
